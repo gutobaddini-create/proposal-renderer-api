@@ -6,7 +6,7 @@ info:
 security:
   - ApiKeyAuth: []
 servers:
-  - url: https://SEU-DOMINIO-DA-API.com
+  - url: https://proposal-renderer-api.onrender.com
     description: API publicada em produção
 paths:
   /health:
@@ -117,13 +117,13 @@ paths:
                     properties:
                       pdf:
                         type: string
-                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta.pdf
+                        example: https://proposal-renderer-api.onrender.com/files/proposal_20260609_001/proposta.pdf
                       visualDocx:
                         type: string
-                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta_visual.docx
+                        example: https://proposal-renderer-api.onrender.com/files/proposal_20260609_001/proposta_visual.docx
                       editableDocx:
                         type: string
-                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta_editavel.docx
+                        example: https://proposal-renderer-api.onrender.com/files/proposal_20260609_001/proposta_editavel.docx
                   warnings:
                     type: array
                     items:

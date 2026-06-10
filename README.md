@@ -92,7 +92,7 @@ Para Render, o repositório inclui `render.yaml`. No painel do Render:
 
 ```text
 PROPOSAL_RENDERER_API_KEY=sua_chave_segura
-OUTPUT_BASE_URL=https://url-do-servico.onrender.com/files
+OUTPUT_BASE_URL=https://proposal-renderer-api.onrender.com/files
 ```
 
 O serviço usa `/render-health` como health check público do Render. Os endpoints usados pela Action continuam protegidos por `X-API-Key`.
@@ -129,7 +129,7 @@ Header name: X-API-Key
 API key: mesma chave de PROPOSAL_RENDERER_API_KEY
 ```
 
-Substitua `https://SEU-DOMINIO-DA-API.com` pela URL HTTPS real da API.
+O schema já está configurado para `https://proposal-renderer-api.onrender.com`.
 
 ## Sanitização obrigatória
 

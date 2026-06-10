@@ -13,4 +13,4 @@ services:
       - key: PROPOSAL_RENDERER_API_KEY
         sync: false
       - key: OUTPUT_BASE_URL
-        sync: false
+        value: https://proposal-renderer-api.onrender.com/files
