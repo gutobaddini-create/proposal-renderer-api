@@ -5,3 +5,4 @@ __pycache__/
 uvicorn.*.log
 output/
 .env
+assets/generated_logo.png

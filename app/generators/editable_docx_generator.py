@@ -5,7 +5,11 @@ from typing import Any
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt, RGBColor
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm, Pt, RGBColor
+
+from app.brand_assets import get_logo_path
 
 
 NAVY = RGBColor(23, 32, 51)
@@ -37,6 +41,65 @@ def _set_document_styles(document: Document) -> None:
         style.font.bold = True
 
 
+def _set_cell_shading(cell, fill: str) -> None:
+    tc_pr = cell._tc.get_or_add_tcPr()
+    shading = OxmlElement("w:shd")
+    shading.set(qn("w:fill"), fill)
+    tc_pr.append(shading)
+
+
+def _set_cell_text_color(cell, color: RGBColor) -> None:
+    for paragraph in cell.paragraphs:
+        for run in paragraph.runs:
+            run.font.color.rgb = color
+
+
+def _apply_header_footer(document: Document) -> None:
+    logo_path = get_logo_path()
+    section = document.sections[0]
+    section.top_margin = Cm(1.7)
+    section.bottom_margin = Cm(1.7)
+    section.header_distance = Cm(0.45)
+    section.footer_distance = Cm(0.45)
+
+    header = section.header
+    header_table = header.add_table(rows=1, cols=2, width=Cm(17))
+    header_table.autofit = False
+    header_table.columns[0].width = Cm(8)
+    header_table.columns[1].width = Cm(9)
+
+    logo_paragraph = header_table.cell(0, 0).paragraphs[0]
+    logo_paragraph.add_run().add_picture(str(logo_path), width=Cm(4.2))
+
+    text_paragraph = header_table.cell(0, 1).paragraphs[0]
+    text_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run = text_paragraph.add_run("Proposta juridica empresarial")
+    run.bold = True
+    run.font.color.rgb = NAVY
+    run.font.size = Pt(9)
+
+    for cell in header_table.rows[0].cells:
+        _set_cell_shading(cell, "F7F4EF")
+
+    footer = section.footer
+    footer_table = footer.add_table(rows=1, cols=2, width=Cm(17))
+    footer_table.autofit = False
+    footer_table.columns[0].width = Cm(12)
+    footer_table.columns[1].width = Cm(5)
+    left = footer_table.cell(0, 0).paragraphs[0]
+    left.add_run("Lobo Baddini Advocacia").bold = True
+    left.runs[0].font.color.rgb = RGBColor(255, 255, 255)
+    right = footer_table.cell(0, 1).paragraphs[0]
+    right.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    right_run = right.add_run("Documento confidencial")
+    right_run.font.color.rgb = RGBColor(255, 255, 255)
+    right_run.font.size = Pt(8)
+
+    for cell in footer_table.rows[0].cells:
+        _set_cell_shading(cell, "172033")
+        _set_cell_text_color(cell, RGBColor(255, 255, 255))
+
+
 def _add_section_content(document: Document, content: Any) -> None:
     if isinstance(content, list):
         for item in content:
@@ -56,6 +119,7 @@ def generate_editable_docx(data: dict[str, Any], output_dir: Path) -> Path:
     path = output_dir / "proposta_editavel.docx"
     document = Document()
     _set_document_styles(document)
+    _apply_header_footer(document)
 
     provider = data.get("provider", {})
     client = data.get("client", {})

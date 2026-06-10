@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from reportlab.lib.utils import ImageReader
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.pagesizes import A4
@@ -17,6 +18,8 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+
+from app.brand_assets import get_logo_path
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -48,6 +51,7 @@ def _content_to_rows(content: Any) -> list[list[Any]]:
 def _draw_background(canvas, doc) -> None:
     canvas.saveState()
     page = doc.page
+    logo_path = get_logo_path()
 
     canvas.setFillColor(colors.white)
     canvas.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
@@ -57,24 +61,40 @@ def _draw_background(canvas, doc) -> None:
         canvas.rect(0, PAGE_HEIGHT - 8.6 * cm, PAGE_WIDTH, 8.6 * cm, fill=1, stroke=0)
         canvas.setFillColor(GOLD)
         canvas.rect(0, PAGE_HEIGHT - 8.75 * cm, PAGE_WIDTH, 0.15 * cm, fill=1, stroke=0)
-        canvas.setFillColor(PAPER)
-        canvas.circle(PAGE_WIDTH - 2.1 * cm, PAGE_HEIGHT - 2.1 * cm, 1.1 * cm, fill=1, stroke=0)
-        canvas.setFillColor(GOLD)
-        canvas.circle(PAGE_WIDTH - 2.1 * cm, PAGE_HEIGHT - 2.1 * cm, 0.72 * cm, fill=1, stroke=0)
+        canvas.drawImage(
+            ImageReader(str(logo_path)),
+            PAGE_WIDTH - 7.1 * cm,
+            PAGE_HEIGHT - 2.7 * cm,
+            width=5.5 * cm,
+            height=1.9 * cm,
+            preserveAspectRatio=True,
+            mask="auto",
+        )
     else:
         canvas.setFillColor(PAPER)
-        canvas.rect(0, PAGE_HEIGHT - 1.15 * cm, PAGE_WIDTH, 1.15 * cm, fill=1, stroke=0)
-        canvas.setFillColor(GOLD)
-        canvas.rect(0, PAGE_HEIGHT - 1.18 * cm, PAGE_WIDTH, 0.05 * cm, fill=1, stroke=0)
+        canvas.rect(0, PAGE_HEIGHT - 1.35 * cm, PAGE_WIDTH, 1.35 * cm, fill=1, stroke=0)
+        canvas.setFillColor(NAVY)
+        canvas.rect(0, PAGE_HEIGHT - 1.35 * cm, PAGE_WIDTH, 0.12 * cm, fill=1, stroke=0)
+        canvas.drawImage(
+            ImageReader(str(logo_path)),
+            1.6 * cm,
+            PAGE_HEIGHT - 1.1 * cm,
+            width=3.2 * cm,
+            height=0.85 * cm,
+            preserveAspectRatio=True,
+            mask="auto",
+        )
         canvas.setFillColor(MUTED)
         canvas.setFont("Helvetica", 8)
         canvas.drawRightString(PAGE_WIDTH - 1.6 * cm, PAGE_HEIGHT - 0.72 * cm, f"Página {page}")
 
-    canvas.setFillColor(MUTED)
+    canvas.setFillColor(NAVY)
+    canvas.rect(0, 0, PAGE_WIDTH, 1.35 * cm, fill=1, stroke=0)
+    canvas.setFillColor(colors.white)
     canvas.setFont("Helvetica", 8)
     canvas.drawString(1.8 * cm, 1.0 * cm, "Documento gerado automaticamente pela API Renderizadora de Propostas")
     canvas.setFillColor(GOLD)
-    canvas.rect(1.8 * cm, 0.75 * cm, PAGE_WIDTH - 3.6 * cm, 0.03 * cm, fill=1, stroke=0)
+    canvas.rect(0, 1.35 * cm, PAGE_WIDTH, 0.05 * cm, fill=1, stroke=0)
     canvas.restoreState()
 
 

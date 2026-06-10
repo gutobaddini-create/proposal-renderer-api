@@ -131,6 +131,16 @@ API key: mesma chave de PROPOSAL_RENDERER_API_KEY
 
 O schema já está configurado para `https://proposal-renderer-api.onrender.com`.
 
+## Logo do escritório
+
+Para usar o logo real do escritório no PDF e no Word editável, salve o arquivo em:
+
+```text
+assets/logo.png
+```
+
+Se esse arquivo não existir, a API usa automaticamente um monograma temporário gerado em tempo de execução.
+
 ## Sanitização obrigatória
 
 Antes de gerar qualquer arquivo, a API percorre todo o JSON e converte links de e-mail em markdown, como:
