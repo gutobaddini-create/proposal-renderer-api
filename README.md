@@ -82,7 +82,22 @@ Nesta versão, a API gera:
 
 ## Deploy
 
-Para Render ou Railway, configure:
+Para Render, o repositório inclui `render.yaml`. No painel do Render:
+
+1. Clique em `New`.
+2. Escolha `Blueprint`.
+3. Conecte o repositório `gutobaddini-create/proposal-renderer-api`.
+4. Confirme o arquivo `render.yaml`.
+5. Preencha as variáveis solicitadas:
+
+```text
+PROPOSAL_RENDERER_API_KEY=sua_chave_segura
+OUTPUT_BASE_URL=https://url-do-servico.onrender.com/files
+```
+
+O serviço usa `/render-health` como health check público do Render. Os endpoints usados pela Action continuam protegidos por `X-API-Key`.
+
+Para configuração manual no Render ou Railway, use:
 
 ```text
 Build command: pip install -r requirements.txt

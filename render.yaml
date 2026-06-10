@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: proposal-renderer-api
+    runtime: python
+    repo: https://github.com/gutobaddini-create/proposal-renderer-api
+    branch: main
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /render-health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PROPOSAL_RENDERER_API_KEY
+        sync: false
+      - key: OUTPUT_BASE_URL
+        sync: false

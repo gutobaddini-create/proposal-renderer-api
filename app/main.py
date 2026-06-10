@@ -41,6 +41,11 @@ def health() -> dict[str, str]:
     return {"status": "ok", "service": "proposal-renderer-api", "version": "0.1.0"}
 
 
+@app.get("/render-health")
+def render_health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 @app.post(
     "/generate-proposal",
     response_model=GenerateProposalResponse,
