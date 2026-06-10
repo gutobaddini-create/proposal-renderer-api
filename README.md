@@ -1,6 +1,6 @@
 # Proposal Renderer API
 
-API FastAPI para receber um JSON estruturado de proposta jurídica e gerar arquivos em PDF e Word editável.
+API FastAPI para receber um JSON estruturado de proposta jurídica e gerar arquivos em PDF, Word visual e Word editável.
 
 ## Variáveis de ambiente
 
@@ -78,7 +78,7 @@ Nesta versão, a API gera:
 
 - `proposta.pdf`
 - `proposta_editavel.docx`
-- `proposta_visual.docx`, como placeholder se `generateVisualDocx` vier habilitado
+- `proposta_visual.docx`, com as páginas do PDF renderizadas como imagens A4
 
 ## Deploy
 

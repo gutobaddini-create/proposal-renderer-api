@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from app.file_manager import OUTPUT_DIR, build_proposal_id, prepare_output_dir, public_output_url
 from app.generators.editable_docx_generator import generate_editable_docx
 from app.generators.pdf_generator import generate_pdf
-from app.generators.visual_docx_generator import generate_visual_docx_placeholder
+from app.generators.visual_docx_generator import generate_visual_docx_from_pdf
 from app.models import ErrorResponse, GenerateProposalResponse, GeneratedFiles, ProposalRequest
 from app.security import verify_api_key
 from app.sanitizer import collect_warnings, sanitize_proposal_json
@@ -72,13 +72,16 @@ async def generate_proposal(request: Request) -> GenerateProposalResponse:
     files_base_url = get_files_base_url(request)
 
     files = GeneratedFiles()
-    if proposal_request.output.generatePdf:
-        files.pdf = public_output_url(generate_pdf(proposal_data, output_dir), files_base_url)
+    pdf_path = None
+    if proposal_request.output.generatePdf or proposal_request.output.generateVisualDocx:
+        pdf_path = generate_pdf(proposal_data, output_dir)
+    if proposal_request.output.generatePdf and pdf_path:
+        files.pdf = public_output_url(pdf_path, files_base_url)
     if proposal_request.output.generateEditableDocx:
         files.editableDocx = public_output_url(generate_editable_docx(proposal_data, output_dir), files_base_url)
-    if proposal_request.output.generateVisualDocx:
+    if proposal_request.output.generateVisualDocx and pdf_path:
         files.visualDocx = public_output_url(
-            generate_visual_docx_placeholder(proposal_data, output_dir),
+            generate_visual_docx_from_pdf(pdf_path, output_dir),
             files_base_url,
         )
 
