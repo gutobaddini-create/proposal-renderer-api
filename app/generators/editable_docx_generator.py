@@ -10,6 +10,7 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
 from app.brand_assets import BRAND_BLUE, get_logo_path
+from app.text_normalizer import translate_known_phrases, translate_label
 
 
 BRAND_BLUE_HEX = BRAND_BLUE.replace("#", "")
@@ -19,7 +20,7 @@ MUTED = RGBColor(102, 112, 133)
 
 
 def _clean(value: Any) -> str:
-    return str(value or "").strip()
+    return translate_known_phrases(str(value or "").strip())
 
 
 def _add_key_value(document: Document, label: str, value: Any) -> None:
@@ -74,7 +75,7 @@ def _apply_header_footer(document: Document) -> None:
 
     text_paragraph = header_table.cell(0, 1).paragraphs[0]
     text_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = text_paragraph.add_run("Proposta juridica empresarial")
+    run = text_paragraph.add_run("Proposta jurídica empresarial")
     run.bold = True
     run.font.color.rgb = RGBColor(255, 255, 255)
     run.font.size = Pt(9)
@@ -110,10 +111,24 @@ def _add_section_content(document: Document, content: Any) -> None:
         table.style = "Table Grid"
         for key, value in content.items():
             cells = table.add_row().cells
-            cells[0].text = _clean(key)
+            cells[0].text = translate_label(key)
             cells[1].text = _clean(value)
     else:
         document.add_paragraph(_clean(content))
+
+
+def _find_acceptance_text(proposal: dict[str, Any]) -> str:
+    acceptance = proposal.get("acceptance")
+    if isinstance(acceptance, dict):
+        for key in ("text", "acceptanceText", "acceptance_text", "body"):
+            if acceptance.get(key):
+                return _clean(acceptance[key])
+    if isinstance(acceptance, str):
+        return _clean(acceptance)
+    for key in ("acceptanceText", "acceptance_text"):
+        if proposal.get(key):
+            return _clean(proposal[key])
+    return "De acordo com os termos apresentados nesta proposta."
 
 
 def generate_editable_docx(data: dict[str, Any], output_dir: Path) -> Path:
@@ -127,6 +142,7 @@ def generate_editable_docx(data: dict[str, Any], output_dir: Path) -> Path:
     proposal = data.get("proposal", {})
     investment = proposal.get("investment", {})
     term = proposal.get("term", {})
+    acceptance_text = _find_acceptance_text(proposal)
 
     title = document.add_heading(proposal.get("title", "Proposta Jurídica"), level=0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -158,14 +174,18 @@ def generate_editable_docx(data: dict[str, Any], output_dir: Path) -> Path:
 
     document.add_heading("Escopo", level=1)
     for section in data.get("layoutPlan", []):
-        document.add_heading(_clean(section.get("title") or section.get("heading") or "Seção"), level=2)
+        document.add_heading(translate_label(section.get("title") or section.get("heading") or "Seção"), level=2)
         content = section.get("content") or section.get("body") or section.get("text") or section
         _add_section_content(document, content)
 
     document.add_heading("Aceite", level=1)
-    document.add_paragraph("De acordo com os termos apresentados nesta proposta.")
-    document.add_paragraph("\nContratante: ______________________________")
-    document.add_paragraph("Proponente: ______________________________")
+    document.add_paragraph(acceptance_text)
+    document.add_paragraph("\n________________________________")
+    document.add_paragraph(_clean(client.get("name") or "Contratante"))
+    document.add_paragraph("Contratante")
+    document.add_paragraph("\n________________________________")
+    document.add_paragraph(_clean(provider.get("name") or "Proponente"))
+    document.add_paragraph("Proponente")
 
     document.save(path)
     return path

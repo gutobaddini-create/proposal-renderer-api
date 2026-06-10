@@ -41,7 +41,7 @@ def get_logo_path() -> Path:
         draw.text((205, 72), "Lobo Baddini", fill=BRAND_BLUE, font=name_font)
         draw.text((207, 112), "Advocacia", fill=BRAND_BLUE, font=name_font)
         draw.line((206, 153, 545, 153), fill=GOLD, width=3)
-        draw.text((207, 164), "Propostas juridicas empresariais", fill=BRAND_BLUE, font=subtitle_font)
+        draw.text((207, 164), "Propostas jurídicas empresariais", fill=BRAND_BLUE, font=subtitle_font)
         image.save(FALLBACK_LOGO_PATH)
 
     return FALLBACK_LOGO_PATH

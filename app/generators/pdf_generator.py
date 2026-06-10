@@ -20,6 +20,7 @@ from reportlab.platypus import (
 )
 
 from app.brand_assets import BRAND_BLUE, get_logo_path
+from app.text_normalizer import translate_known_phrases, translate_label
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -33,7 +34,7 @@ SOFT_BLUE = colors.HexColor("#EEF2F7")
 
 
 def _clean(value: Any) -> str:
-    return str(value or "").strip()
+    return translate_known_phrases(str(value or "").strip())
 
 
 def _paragraph(text: Any, style: ParagraphStyle) -> Paragraph:
@@ -44,8 +45,22 @@ def _content_to_rows(content: Any) -> list[list[Any]]:
     if isinstance(content, list):
         return [[f"{index}.", _clean(item)] for index, item in enumerate(content, start=1)]
     if isinstance(content, dict):
-        return [[_clean(key), _clean(value)] for key, value in content.items()]
+        return [[translate_label(key), _clean(value)] for key, value in content.items()]
     return [["", _clean(content)]]
+
+
+def _find_acceptance_text(proposal: dict[str, Any]) -> str:
+    acceptance = proposal.get("acceptance")
+    if isinstance(acceptance, dict):
+        for key in ("text", "acceptanceText", "acceptance_text", "body"):
+            if acceptance.get(key):
+                return _clean(acceptance[key])
+    if isinstance(acceptance, str):
+        return _clean(acceptance)
+    for key in ("acceptanceText", "acceptance_text"):
+        if proposal.get(key):
+            return _clean(proposal[key])
+    return "De acordo com os termos apresentados nesta proposta."
 
 
 def _draw_background(canvas, doc) -> None:
@@ -256,6 +271,7 @@ def generate_pdf(data: dict[str, Any], output_dir: Path) -> Path:
     proposal = data.get("proposal", {})
     investment = proposal.get("investment", {})
     term = proposal.get("term", {})
+    acceptance_text = _find_acceptance_text(proposal)
 
     story: list[Any] = [
         Spacer(1, 0.7 * cm),
@@ -304,7 +320,7 @@ def generate_pdf(data: dict[str, Any], output_dir: Path) -> Path:
         story.extend([_paragraph(objective, styles["body"]), Spacer(1, 0.25 * cm)])
 
     for index, section in enumerate(data.get("layoutPlan", []), start=1):
-        title = section.get("title") or section.get("heading") or f"Seção {index}"
+        title = translate_label(section.get("title") or section.get("heading") or f"Seção {index}")
         content = section.get("content") or section.get("body") or section.get("text") or section
         story.append(_paragraph(f"{index}. {title}", styles["h2"]))
         story.append(_section_table(styles, content))
@@ -321,18 +337,25 @@ def generate_pdf(data: dict[str, Any], output_dir: Path) -> Path:
             _paragraph(term.get("duration", ""), styles["body"]),
             Spacer(1, 0.5 * cm),
             _paragraph("Aceite", styles["h2"]),
-            _paragraph("De acordo com os termos apresentados nesta proposta.", styles["body"]),
+            _paragraph(acceptance_text, styles["body"]),
             Spacer(1, 1.1 * cm),
             Table(
-                [["", "", ""], ["Contratante", "", "Proponente"]],
+                [
+                    ["", "", ""],
+                    [client.get("name") or "Contratante", "", provider.get("name") or "Proponente"],
+                    ["Contratante", "", "Proponente"],
+                ],
                 colWidths=[6.2 * cm, 1.6 * cm, 6.2 * cm],
                 style=TableStyle(
                     [
                         ("LINEABOVE", (0, 1), (0, 1), 1.2, NAVY),
                         ("LINEABOVE", (2, 1), (2, 1), 1.2, NAVY),
                         ("ALIGN", (0, 1), (-1, -1), "CENTER"),
-                        ("TEXTCOLOR", (0, 1), (-1, -1), MUTED),
+                        ("FONTNAME", (0, 1), (2, 1), "Helvetica-Bold"),
+                        ("TEXTCOLOR", (0, 1), (2, 1), INK),
+                        ("TEXTCOLOR", (0, 2), (2, 2), MUTED),
                         ("TOPPADDING", (0, 1), (-1, -1), 8),
+                        ("BOTTOMPADDING", (0, 2), (-1, 2), 2),
                     ]
                 ),
             ),
