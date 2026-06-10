@@ -19,11 +19,11 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from app.brand_assets import get_logo_path
+from app.brand_assets import BRAND_BLUE, get_logo_path
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
-NAVY = colors.HexColor("#172033")
+NAVY = colors.HexColor(BRAND_BLUE)
 GOLD = colors.HexColor("#B58A45")
 INK = colors.HexColor("#20242A")
 MUTED = colors.HexColor("#667085")
@@ -71,9 +71,9 @@ def _draw_background(canvas, doc) -> None:
             mask="auto",
         )
     else:
-        canvas.setFillColor(PAPER)
-        canvas.rect(0, PAGE_HEIGHT - 1.35 * cm, PAGE_WIDTH, 1.35 * cm, fill=1, stroke=0)
         canvas.setFillColor(NAVY)
+        canvas.rect(0, PAGE_HEIGHT - 1.35 * cm, PAGE_WIDTH, 1.35 * cm, fill=1, stroke=0)
+        canvas.setFillColor(GOLD)
         canvas.rect(0, PAGE_HEIGHT - 1.35 * cm, PAGE_WIDTH, 0.12 * cm, fill=1, stroke=0)
         canvas.drawImage(
             ImageReader(str(logo_path)),
@@ -84,15 +84,12 @@ def _draw_background(canvas, doc) -> None:
             preserveAspectRatio=True,
             mask="auto",
         )
-        canvas.setFillColor(MUTED)
+        canvas.setFillColor(colors.white)
         canvas.setFont("Helvetica", 8)
         canvas.drawRightString(PAGE_WIDTH - 1.6 * cm, PAGE_HEIGHT - 0.72 * cm, f"Página {page}")
 
     canvas.setFillColor(NAVY)
     canvas.rect(0, 0, PAGE_WIDTH, 1.35 * cm, fill=1, stroke=0)
-    canvas.setFillColor(colors.white)
-    canvas.setFont("Helvetica", 8)
-    canvas.drawString(1.8 * cm, 1.0 * cm, "Documento gerado automaticamente pela API Renderizadora de Propostas")
     canvas.setFillColor(GOLD)
     canvas.rect(0, 1.35 * cm, PAGE_WIDTH, 0.05 * cm, fill=1, stroke=0)
     canvas.restoreState()

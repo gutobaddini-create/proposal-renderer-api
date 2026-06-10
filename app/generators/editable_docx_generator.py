@@ -9,10 +9,11 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
-from app.brand_assets import get_logo_path
+from app.brand_assets import BRAND_BLUE, get_logo_path
 
 
-NAVY = RGBColor(23, 32, 51)
+BRAND_BLUE_HEX = BRAND_BLUE.replace("#", "")
+NAVY = RGBColor(16, 17, 48)
 GOLD = RGBColor(181, 138, 69)
 MUTED = RGBColor(102, 112, 133)
 
@@ -75,11 +76,11 @@ def _apply_header_footer(document: Document) -> None:
     text_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     run = text_paragraph.add_run("Proposta juridica empresarial")
     run.bold = True
-    run.font.color.rgb = NAVY
+    run.font.color.rgb = RGBColor(255, 255, 255)
     run.font.size = Pt(9)
 
     for cell in header_table.rows[0].cells:
-        _set_cell_shading(cell, "F7F4EF")
+        _set_cell_shading(cell, BRAND_BLUE_HEX)
 
     footer = section.footer
     footer_table = footer.add_table(rows=1, cols=2, width=Cm(17))
@@ -96,7 +97,7 @@ def _apply_header_footer(document: Document) -> None:
     right_run.font.size = Pt(8)
 
     for cell in footer_table.rows[0].cells:
-        _set_cell_shading(cell, "172033")
+        _set_cell_shading(cell, BRAND_BLUE_HEX)
         _set_cell_text_color(cell, RGBColor(255, 255, 255))
 
 
