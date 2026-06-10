@@ -1,0 +1,220 @@
+openapi: 3.1.0
+info:
+  title: Proposal Renderer API
+  description: API para gerar propostas jurídicas em PDF, Word visual e Word editável a partir de JSON estruturado.
+  version: 0.1.0
+servers:
+  - url: https://SEU-DOMINIO-DA-API.com
+    description: Servidor de produção
+  - url: http://localhost:8000
+    description: Ambiente local de desenvolvimento
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Verifica se a API está ativa
+      responses:
+        "200":
+          description: Serviço ativo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: proposal-renderer-api
+                  version:
+                    type: string
+                    example: 0.1.0
+  /generate-proposal:
+    post:
+      operationId: generateProposal
+      summary: Gera proposta jurídica em PDF e Word
+      description: Recebe JSON estruturado de proposta e gera PDF visual, Word visual e Word editável.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - schema_version
+                - document_type
+                - output
+                - provider
+                - client
+                - proposal
+              properties:
+                schema_version:
+                  type: string
+                  example: proposal_renderer_v1
+                document_type:
+                  type: string
+                  example: proposta_juridica
+                metadata:
+                  type: object
+                  additionalProperties: true
+                output:
+                  type: object
+                  properties:
+                    generatePdf:
+                      type: boolean
+                      example: true
+                    generateVisualDocx:
+                      type: boolean
+                      example: true
+                    generateEditableDocx:
+                      type: boolean
+                      example: true
+                provider:
+                  type: object
+                  required:
+                    - name
+                    - email
+                  properties:
+                    name:
+                      type: string
+                      example: Lobo Baddini Advocacia
+                    area:
+                      type: string
+                      example: Direito do Trabalho Empresarial
+                    responsible:
+                      type: string
+                      example: Érica Lobo Baddini de Paula
+                    oab:
+                      type: string
+                      example: "[informar]"
+                    email:
+                      type: string
+                      example: advlobobaddini.erica@gmail.com
+                    phone:
+                      type: string
+                      example: 13 97402-9133
+                    instagram:
+                      type: string
+                      example: "@lobobaddini_advocacia"
+                    address:
+                      type: string
+                      example: Rua Major David Pereira nº 115, Conj. 2, Santa Cruz, Itapira/SP
+                client:
+                  type: object
+                  required:
+                    - name
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum: [pj, pf]
+                      example: pj
+                    name:
+                      type: string
+                      example: Bovmeat Processadora de Carnes e Derivados
+                    document:
+                      type: string
+                      example: "[informar]"
+                    responsible:
+                      type: string
+                      example: "[informar]"
+                    responsibleRole:
+                      type: string
+                      example: "[informar]"
+                    email:
+                      type: string
+                      example: "[informar]"
+                    phone:
+                      type: string
+                      example: "[informar]"
+                    address:
+                      type: string
+                      example: "[informar]"
+                    city:
+                      type: string
+                      example: "[informar]"
+                layoutPreferences:
+                  type: object
+                  additionalProperties: true
+                proposal:
+                  type: object
+                  required:
+                    - title
+                    - investment
+                    - term
+                  additionalProperties: true
+                  properties:
+                    templateId:
+                      type: string
+                      example: juridico_trabalhista_empresarial_preventivo
+                    title:
+                      type: string
+                      example: Proposta de Prestação de Serviços Jurídicos Trabalhistas
+                    subtitle:
+                      type: string
+                      example: Consultoria trabalhista mensal com foco preventivo e suporte ao RH
+                    investment:
+                      type: object
+                      additionalProperties: true
+                    term:
+                      type: object
+                      additionalProperties: true
+                layoutPlan:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                pendingFields:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Proposta gerada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  proposalId:
+                    type: string
+                    example: proposal_20260609_001
+                  message:
+                    type: string
+                    example: Proposta gerada com sucesso.
+                  files:
+                    type: object
+                    properties:
+                      pdf:
+                        type: string
+                        example: /output/proposal_20260609_001/proposta.pdf
+                      visualDocx:
+                        type: string
+                        example: /output/proposal_20260609_001/proposta_visual.docx
+                      editableDocx:
+                        type: string
+                        example: /output/proposal_20260609_001/proposta_editavel.docx
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: JSON inválido ou campos obrigatórios ausentes.
+                  details:
+                    type: object
+                    additionalProperties: true

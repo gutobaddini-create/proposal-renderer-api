@@ -1,0 +1,77 @@
+{
+  "schema_version": "proposal_renderer_v1",
+  "document_type": "proposta_juridica",
+  "metadata": {
+    "proposalId": "bovmeat_mvp"
+  },
+  "output": {
+    "generatePdf": true,
+    "generateVisualDocx": true,
+    "generateEditableDocx": true
+  },
+  "provider": {
+    "name": "Lobo Baddini Advocacia",
+    "area": "Direito do Trabalho Empresarial",
+    "responsible": "Érica Lobo Baddini de Paula",
+    "oab": "[informar]",
+    "email": "[advlobobaddini.erica@gmail.com](mailto:advlobobaddini.erica@gmail.com)",
+    "phone": "13 97402-9133",
+    "instagram": "@lobobaddini_advocacia",
+    "address": "Rua Major David Pereira nº 115, Conj. 2, Santa Cruz, Itapira/SP"
+  },
+  "client": {
+    "type": "pj",
+    "name": "Bovmeat Processadora de Carnes e Derivados",
+    "document": "[informar]",
+    "responsible": "[informar]",
+    "responsibleRole": "[informar]",
+    "email": "mailto:contato@bovmeat.example.com",
+    "phone": "[informar]",
+    "address": "[informar]",
+    "city": "[informar]"
+  },
+  "layoutPreferences": {
+    "tone": "profissional",
+    "style": "jurídico empresarial"
+  },
+  "proposal": {
+    "templateId": "juridico_trabalhista_empresarial_preventivo",
+    "title": "Proposta de Prestação de Serviços Jurídicos Trabalhistas",
+    "subtitle": "Consultoria trabalhista mensal com foco preventivo e suporte ao RH",
+    "objective": "Prestar assessoria jurídica trabalhista preventiva para reduzir riscos e apoiar decisões de gestão de pessoas.",
+    "investment": {
+      "amountText": "Honorários mensais de R$ 3.500,00."
+    },
+    "term": {
+      "duration": "Contrato inicial de 12 meses."
+    }
+  },
+  "layoutPlan": [
+    {
+      "title": "Objeto",
+      "content": "Consultoria jurídica trabalhista preventiva, com análise de rotinas, orientação ao RH e suporte na condução de temas recorrentes."
+    },
+    {
+      "title": "Escopo de atuação",
+      "content": [
+        "Orientação preventiva sobre legislação trabalhista.",
+        "Análise de documentos e procedimentos internos.",
+        "Suporte ao RH em dúvidas recorrentes.",
+        "Reuniões periódicas para acompanhamento."
+      ]
+    },
+    {
+      "title": "Condições",
+      "content": {
+        "Prazo": "12 meses",
+        "Investimento": "R$ 3.500,00 mensais",
+        "Contato": "[advlobobaddini.erica@gmail.com](mailto:advlobobaddini.erica@gmail.com)"
+      }
+    }
+  ],
+  "pendingFields": [
+    "OAB",
+    "CNPJ da contratante",
+    "Representante legal"
+  ]
+}

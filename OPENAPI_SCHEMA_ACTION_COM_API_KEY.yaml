@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  title: Proposal Renderer API
+  description: API para gerar propostas jurídicas em PDF, Word visual e Word editável a partir de JSON estruturado.
+  version: 0.1.0
+security:
+  - ApiKeyAuth: []
+servers:
+  - url: https://SEU-DOMINIO-DA-API.com
+    description: API publicada em produção
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Verifica se a API renderizadora está ativa
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Serviço ativo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: proposal-renderer-api
+                  version:
+                    type: string
+                    example: 0.1.0
+  /generate-proposal:
+    post:
+      operationId: generateProposal
+      summary: Gera proposta jurídica em PDF e Word
+      description: Recebe JSON estruturado de proposta e gera PDF visual, Word visual e Word editável.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - schema_version
+                - document_type
+                - output
+                - provider
+                - client
+                - proposal
+              properties:
+                schema_version:
+                  type: string
+                  example: proposal_renderer_v1
+                document_type:
+                  type: string
+                  example: proposta_juridica
+                metadata:
+                  type: object
+                  additionalProperties: true
+                output:
+                  type: object
+                  properties:
+                    generatePdf:
+                      type: boolean
+                      example: true
+                    generateVisualDocx:
+                      type: boolean
+                      example: true
+                    generateEditableDocx:
+                      type: boolean
+                      example: true
+                provider:
+                  type: object
+                  additionalProperties: true
+                client:
+                  type: object
+                  additionalProperties: true
+                layoutPreferences:
+                  type: object
+                  additionalProperties: true
+                proposal:
+                  type: object
+                  additionalProperties: true
+                layoutPlan:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                pendingFields:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Proposta gerada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  proposalId:
+                    type: string
+                    example: proposal_20260609_001
+                  message:
+                    type: string
+                    example: Proposta gerada com sucesso.
+                  files:
+                    type: object
+                    properties:
+                      pdf:
+                        type: string
+                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta.pdf
+                      visualDocx:
+                        type: string
+                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta_visual.docx
+                      editableDocx:
+                        type: string
+                        example: https://SEU-DOMINIO-DA-API.com/files/proposal_20260609_001/proposta_editavel.docx
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: JSON inválido ou campos obrigatórios ausentes.
+                  details:
+                    type: object
+                    additionalProperties: true
+        "401":
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: API key inválida ou ausente.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
